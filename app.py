@@ -39,9 +39,12 @@ def init_db():
     except sqlite3.Error as e:
         print(f"Erro ao inicializar o banco de dados: {e}")
 
-@app.before_first_request
-def setup_database():
-    init_db()
+
+@app.before_request
+def setup_database_on_request():
+    if not hasattr(setup_database_on_request, '_database_initialized'):
+        init_db()
+        setup_database_on_request._database_initialized = True
     
 
 def formatar_moeda_br(valor):
