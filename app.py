@@ -6,14 +6,6 @@ import locale
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'senhaultramegasecreta@4312'
 
-try:
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-except locale.Error:
-    try:
-        locale.setlocale(locale.LC_ALL, 'Portuguese_Brazil.1252')
-    except locale.Error:
-        locale.setlocale(locale.LC_ALL, '')
-
 
 def formatar_moeda_br(valor):
     return locale.currency(valor, grouping=True, symbol=True)
