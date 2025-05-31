@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feito por Felipe Correia Costa</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .profile-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 80%;
+            max-width: 600px;
+        }
+        h1, h2 {
+            color: #007bff;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .linkedin-link, .copy-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px; 
+            cursor: pointer;
+            border: none; 
+        }
+        .linkedin-link:hover, .copy-button:hover {
+            background-color: #0056b3;
+        }
+        .easter-egg-message {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <h1>Este Site Foi Desenvolvido Por: Felipe Correia Costa</h1>
+        <h2>Felipe Correia Costa</h2>
+        <p id="developer-description">Sonho em ser um desenvolvedor Full Stack atualmente estou como aprendiz no Kabum na Área de Quality Assunrance,  mas adquirindo mutio aprendizado e conhecimento para o futuro e muito feliz por essa oportunidade.</p>
+        <a href="https://www.linkedin.com/in/felipe-correia-139a88344/" class="linkedin-link" target="_blank">
+            Visite meu perfil no LinkedIn
+        </a>
+        <button class="copy-button" onclick="copyDeveloperInfo()">Copiar Informações</button>
+    </div>
+    <p class="easter-egg-message">Encontrou este segredo? 😉</p>
+
+    <script>
+        function copyDeveloperInfo() {
+            const developerDescription = document.getElementById('developer-description').innerText;
+            const textToCopy = `Este site foi desenvolvido por Felipe Correia.\n${developerDescription}\nVisite meu perfil no LinkedIn: https://www.linkedin.com/in/felipe-correia-139a88344/`;
+
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    alert('Informações do desenvolvedor copiadas para a área de transferência!');
+                })
+                .catch(err => {
+                    console.error('Erro ao copiar: ', err);
+                    alert('Não foi possível copiar as informações. Por favor, tente manualmente.');
+                });
+        }
+    </script>
+</body>
+</html>

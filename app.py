@@ -208,6 +208,10 @@ def sair():
     return redirect(url_for('login'))
 
 
+@app.route('/meucriador')
+def criador():
+    return render_template('others.html')
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000)) 
     app.run(host='0.0.0.0', port=port, debug=False) 
