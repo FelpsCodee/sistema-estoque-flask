@@ -1,15 +1,60 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
-import locale
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'senhaultramegasecreta@4312'
 
+def init_db():
+    try:
+        conn_usuarios = sqlite3.connect('usuarios.db')
+        cursor_usuarios = conn_usuarios.cursor()
+        cursor_usuarios.execute('''
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                senha TEXT NOT NULL
+            )
+        ''')
+        conn_usuarios.commit()
+        conn_usuarios.close()
+
+        conn_estoque = sqlite3.connect('estoque.db')
+        cursor_estoque = conn_estoque.cursor()
+        cursor_estoque.execute('''
+            CREATE TABLE IF NOT EXISTS estoque (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                quantidade INTEGER NOT NULL,
+                preco REAL NOT NULL,
+                tipo TEXT NOT NULL,
+                usuario_id INTEGER NOT NULL,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+            )
+        ''')
+        conn_estoque.commit()
+        conn_estoque.close()
+        print("Tabelas de usuario e estoque criadas/verificadas com sucesso!")
+    except sqlite3.Error as e:
+        print(f"Erro ao inicializar o banco de dados: {e}")
+
+@app.before_first_request
+def setup_database():
+    init_db()
+    
 
 def formatar_moeda_br(valor):
-    return locale.currency(valor, grouping=True, symbol=True)
-
+    """
+    Formata um valor numérico para o formato de moeda brasileira (Ex: R$ 1.234,56).
+    """
+    try:
+        valor_float = float(valor)
+        s_valor = f"{valor_float:,.2f}"
+        s_valor = s_valor.replace(",", "TEMP_COMMA").replace(".", ",").replace("TEMP_COMMA", ".")
+        return f"R$ {s_valor}"
+    except (ValueError, TypeError):
+        return f"R$ {valor}"
 
 app.jinja_env.globals.update(formatar_moeda_br=formatar_moeda_br)
 
@@ -161,5 +206,5 @@ def sair():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    
+    port = int(os.environ.get('PORT', 5000)) 
+    app.run(host='0.0.0.0', port=port, debug=False) 
