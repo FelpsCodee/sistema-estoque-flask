@@ -232,8 +232,8 @@
                 {% for item in itens %}
                 <tr>
                     <td>{{ item[1] }}</td>
-                    <td>{{ formatar_moeda_br(item[3]) }}</td>
-                    <td>{{(item[3]) }}</td>
+                    <td>{{ item[2] }}</td>
+                    <td>{{ formatar_moeda_br(item['3']) }}</td>
                     <td>{{ item[4] }}</td>
                     <td>
                         <a href="{{ url_for('editar_produto', item_id=item[0]) }}" class="btn-edit">Editar</a>
