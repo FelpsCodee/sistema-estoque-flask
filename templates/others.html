@@ -59,25 +59,10 @@
         <p id="developer-description">Sonho em ser um desenvolvedor Full Stack atualmente estou como aprendiz no Kabum na Área de Quality Assunrance,  mas adquirindo mutio aprendizado e conhecimento para o futuro e muito feliz por essa oportunidade.</p>
         <a href="https://www.linkedin.com/in/felipe-correia-139a88344/" class="linkedin-link" target="_blank">
             Visite meu perfil no LinkedIn
+            
         </a>
         <button class="copy-button" onclick="copyDeveloperInfo()">Copiar Informações</button>
     </div>
     <p class="easter-egg-message">Encontrou este segredo? 😉</p>
 
-    <script>
-        function copyDeveloperInfo() {
-            const developerDescription = document.getElementById('developer-description').innerText;
-            const textToCopy = `Este site foi desenvolvido por Felipe Correia.\n${developerDescription}\nVisite meu perfil no LinkedIn: https://www.linkedin.com/in/felipe-correia-139a88344/`;
-
-            navigator.clipboard.writeText(textToCopy)
-                .then(() => {
-                    alert('Informações do desenvolvedor copiadas para a área de transferência!');
-                })
-                .catch(err => {
-                    console.error('Erro ao copiar: ', err);
-                    alert('Não foi possível copiar as informações. Por favor, tente manualmente.');
-                });
-        }
-    </script>
-</body>
 </html>
