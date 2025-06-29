@@ -1,28 +1,29 @@
+
+#Biblioteca Flask para criar o aplicativo web
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
-app = Flask(__name__)
+app = Flask(__name__) #Aqui seria a instância do aplicativo Flask é como vamos chamar o Flask para começar a codar
 app.config['SECRET_KEY'] = 'senhaultramegasecreta@4312'
-
 def init_db():
     try:
-        conn_usuarios = sqlite3.connect('usuarios.db')
-        cursor_usuarios = conn_usuarios.cursor()
-        cursor_usuarios.execute('''
+        # Conecta a um único banco de dados
+        conn = sqlite3.connect('sistema_estoque.db') #conecta o bando de dados ou cria se não existir
+        cursor = conn.cursor() # seria a caneta que vamos usar para escrever no banco de dados
+
+        # Criação da tabela usuarios ( aqui nos vamos criar a tebalea de usuarios) ela vai ter os campos id, username e senha)
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS usuarios (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,           
                 username TEXT NOT NULL UNIQUE,
                 senha TEXT NOT NULL
             )
         ''')
-        conn_usuarios.commit()
-        conn_usuarios.close()
 
-        conn_estoque = sqlite3.connect('estoque.db')
-        cursor_estoque = conn_estoque.cursor()
-        cursor_estoque.execute('''
+        # Criação da tabela estoque ( aqui nos vamos criar a tebalea de estoque) ela vai ter os campos id, nome, quantidade, preco, tipo e usuario_id)
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS estoque (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
@@ -33,21 +34,13 @@ def init_db():
                 FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
             )
         ''')
-        conn_estoque.commit()
-        conn_estoque.close()
-        print("Tabelas de usuario e estoque criadas/verificadas com sucesso!")
-    except sqlite3.Error as e:
+        conn.commit() #aqui nos salvamos as alterações no banco de dados
+        conn.close() # e aqui fechamos a conexão com ele
+        print("Tabelas de usuário e estoque criadas/verificadas com sucesso em 'sistema_estoque.db'!")
+    except sqlite3.Error as e: #aqui se der erro ela retorna essa mensagem de erro ao criar ou iniciar o banco
         print(f"Erro ao inicializar o banco de dados: {e}")
-
-
-@app.before_request
-def setup_database_on_request():
-    if not hasattr(setup_database_on_request, '_database_initialized'):
-        init_db()
-        setup_database_on_request._database_initialized = True
     
-
-def formatar_moeda_br(valor):
+def formatar_moeda_br(valor): # faqui seria oara formatar o valor do preço para o formato brasileiro
     """
     Formata um valor numérico para o formato de moeda brasileira (Ex: R$ 1.234,56).
     """
@@ -62,7 +55,7 @@ def formatar_moeda_br(valor):
 app.jinja_env.globals.update(formatar_moeda_br=formatar_moeda_br)
 
 
-@app.route('/')
+@app.route('/') #aqui seria a rota principal ela sempre começará por ela
 def index():
     return redirect(url_for('login'))
 
@@ -93,7 +86,7 @@ def login():
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
-    if request.method == 'POST':
+    if request.method == 'POST': 
         username = request.form['username']
         senha = request.form['senha']
 
@@ -117,7 +110,7 @@ def cadastro():
 
 @app.route('/estoque', methods=['GET', 'POST'])
 def estoque():
-    if 'user_id' not in session:
+    if 'user_id' not in session: #precisa estar logado para acessar o estoque se não redireciona para a página de login
         flash('Você precisa estar logado para acessar esta página.', 'warning')
         return redirect(url_for('login'))
 
@@ -146,7 +139,7 @@ def estoque():
 
 @app.route('/remove', methods=['POST'])
 def remove():
-    if 'user_id' not in session:
+    if 'user_id' not in session: #se o ususario tentar acessar a rota de remover sem estar logado ele vai ser redirecionado para a pagina de login
         flash('Você precisa estar logado para acessar esta página.', 'warning')
         return redirect(url_for('login'))
 
@@ -167,10 +160,10 @@ def remove():
 
 @app.route('/editar_produto/<int:item_id>', methods=['GET', 'POST'])
 def editar_produto(item_id):
-    if 'user_id' not in session:
+    if 'user_id' not in session: # se o usuario tentar acessar o editar_produto sem estar logado ele vai ser redirecionado para a pagina de login
         flash('Você precisa estar logado para acessar esta página.', 'warning')
-        return redirect(url_for('login'))
-
+        return redirect(url_for('login')) 
+    
     user_id = session['user_id']
 
     with sqlite3.connect('estoque.db') as conn:
@@ -201,17 +194,18 @@ def editar_produto(item_id):
 
     return render_template('editar_produto.html', item=item)
 
-@app.route('/sair')
+@app.route('/sair') #rota para sair do sistema
 def sair():
     session.pop('user_id', None)
     flash('Você foi desconectado.', 'info')
     return redirect(url_for('login'))
 
 
-@app.route('/meucriador')
+@app.route('/meucriador') #rota para a página do criador
 def criador():
     return render_template('others.html')
 
+#  este bloco é o "ligar" e "preparar" do aplicativo, garantindo que ele só faça isso quando for o programa principal em execução.
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000)) 
-    app.run(host='0.0.0.0', port=port, debug=False) 
+    port = int(os.environ.get('PORT', 5000)) #significa que o site pode ser acessado de qualquer computador
+    app.run(host='0.0.0.0', port=port, debug=False)  #Essa é a linha que FAZ O SITE LIGAR e ficar disponível pra todo mundo acessar
